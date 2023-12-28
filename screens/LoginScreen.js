@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView,TextInput, Pressable } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView, TextInput, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons  } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
@@ -26,13 +26,13 @@ const LoginScreen = () => {
         </View>
         <View style={{marginTop: 40}}>
           <View style={{width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5}}>
-            <MaterialIcons name="email" size={24} color="gray"  style={{marginLeft:15}} />
+            <Ionicons name="person" size={24} color="gray"  style={{marginLeft:15}} />
             <TextInput value={email} onChange={(text) => setEmail(text)} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your email'/>
           </View>
 
           <View style={{marginTop: 20,width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5}}>
             <MaterialIcons name="vpn-key" size={24} color="gray" style={{marginLeft:15}} />
-            <TextInput value={password} onChange={(text) => setEmail(setPassword(text))} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your password'/>
+            <TextInput secureTextEntry={true} value={password} onChange={(text) => setPassword(text)} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your password'/>
           </View>
         </View>
 

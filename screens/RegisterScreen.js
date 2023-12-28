@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView,TextInput, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
-  const [fullname, setFulname] = useState("")
+  const [fullname, setFullname] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const navigation = useNavigation()
@@ -28,8 +28,8 @@ const LoginScreen = () => {
         <View style={{marginTop: 40}}>
 
         <View style={{width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5}}>
-            <MaterialIcons name="email" size={24} color="gray"  style={{marginLeft:15}} />
-            <TextInput value={fullname} onChange={(text) => setFullnme(text)} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your fullname'/>
+            <Ionicons name="person" size={24} color="gray"  style={{marginLeft:15}} />
+            <TextInput value={fullname} onChange={(text) => setFullname(text)} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your fullname'/>
           </View>
 
 
@@ -40,13 +40,13 @@ const LoginScreen = () => {
 
           <View style={{marginTop: 20,width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5}}>
             <MaterialIcons name="vpn-key" size={24} color="gray" style={{marginLeft:15}} />
-            <TextInput value={password} onChange={(text) => setEmail(setPassword(text))} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your password'/>
+            <TextInput secureTextEntry={true} value={password} onChange={(text) => setEmail(setPassword(text))} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your password'/>
           </View>
         </View>
 
         <View>
           <Pressable style={{ backgroundColor: "black", marginTop: 30, borderRadius: 10}}>
-            <Text style={{color: "white", textAlign: "center", paddingVertical:20}}>Login</Text>
+            <Text style={{color: "white", textAlign: "center", paddingVertical:20}}>Register</Text>
           </Pressable>
         </View>
 
