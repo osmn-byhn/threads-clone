@@ -31,11 +31,9 @@ app.listen(process.env.PORT, () => {
 const User = require("./models/user")
 const Post = require("./models/post")
 
-const generateSecretKey = () => {
-  const secretKey = crypto.randomBytes(32).toString("hex");
-  return secretKey;
-}
 
+
+const secretKey = "secretKey"
 app.post("/register", async (req, res) => {
   try {
     const { fullName, email, password } = req.body;
@@ -113,3 +111,34 @@ app.post("/login", async(req, res) => {
     res.status(500).json({message: "Error while login post"})
   }
 })
+
+
+
+app.get("/user/:userId", (req, res) => {
+  try {
+    const loggedInUserId = req.params.userId;
+
+    // Token'ı decode et
+    jwt.verify(loggedInUserId, secretKey, (err, decoded) => {
+      if (err) {
+        return res.status(400).json({ message: "Invalid token" });
+      }
+
+      // Token içindeki kullanıcı ID'sini al
+      const userId = decoded.userId;
+
+      // MongoDB sorgusu
+      User.find({ _id: userId  })
+        .then((users) => {
+          console.log(users);
+          res.status(200).json(users);
+        })
+        .catch((error) => {
+          console.log("Error: ", error);
+          res.status(500).json("error");
+        });
+    });
+  } catch (error) {
+    res.status(500).json({ message: "error getting the users" });
+  }
+});
