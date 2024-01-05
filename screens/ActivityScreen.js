@@ -19,7 +19,7 @@ const ActivityScreen = () => {
         const token = await AsyncStorage.getItem("authToken");
         setUserId(token);
         axios
-          .get(`http://192.168.1.39:4000/user/${userId}`)
+          .get(`http://192.168.136.159:4000/user/${userId}`)
           .then((response) => {
             setUsers(response.data);
           })
@@ -32,7 +32,7 @@ const ActivityScreen = () => {
     }, []);
     console.log("users:", users);
     return (
-        <ScrollView style={{ marginTop: 50 }}>
+        <ScrollView style={{ marginTop: 20 }}>
             <View style={{ padding: 10 }}>
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>Activity</Text>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 15, marginTop: 12 }}>

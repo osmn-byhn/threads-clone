@@ -17,7 +17,7 @@ const LoginScreen = () => {
     };
   
     try {
-      const response = await axios.post("http://192.168.1.39:4000/register", user);
+      const response = await axios.post("http://192.168.136.159:4000/register", user);
       console.log(response);
       Alert.alert("Registration successful. You have been registered successfully");
       setFullname("");

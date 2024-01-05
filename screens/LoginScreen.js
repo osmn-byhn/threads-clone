@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView,TextInput, Pressable, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { MaterialIcons, Ionicons  } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -35,7 +36,7 @@ const LoginScreen = () => {
     };
   
     try {
-      const response = await axios.post("http://192.168.1.39:4000/login", user);
+      const response = await axios.post("http://192.168.136.159:4000/login", user);
       console.log(response);
       const token = response.data.token;
       AsyncStorage.setItem("authToken", token)
@@ -64,7 +65,7 @@ const LoginScreen = () => {
         </View>
         <View style={{marginTop: 40}}>
           <View style={{width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5}}>
-            <Ionicons name="person" size={24} color="gray"  style={{marginLeft:15}} />
+          <Ionicons name="person" size={24} color="gray"  style={{marginLeft:15}} />
             <TextInput value={email} onChangeText={(text) => setEmail(text)} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your email'/>
           </View>
 

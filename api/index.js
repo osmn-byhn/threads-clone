@@ -128,7 +128,7 @@ app.get("/user/:userId", (req, res) => {
       const userId = decoded.userId;
 
       // MongoDB sorgusu
-      User.find({ _id: userId  })
+      User.find({  _id: { $ne: userId }  })
         .then((users) => {
           console.log(users);
           res.status(200).json(users);
@@ -142,3 +142,175 @@ app.get("/user/:userId", (req, res) => {
     res.status(500).json({ message: "error getting the users" });
   }
 });
+
+
+app.post("/follow", async (req, res) => {
+  try {
+    const { currentUserId, selectedUserId } = req.body;
+    // Verify both currentUserId and selectedUserId are JWTs
+    const decodedCurrentUserId = jwt.verify(currentUserId, secretKey);
+
+    
+    await User.findByIdAndUpdate(selectedUserId, {
+      $push: { followers: decodedCurrentUserId.userId },
+    });
+    console.log("current: ", decodedCurrentUserId);
+    console.log("selected: ", selectedUserId);
+    
+    console.log("Okey man");
+    res.sendStatus(200)
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error in following a user" });
+  }
+});
+
+
+
+app.post("/users/unfollow", async (req, res) => {
+  try {
+    const { loggedInUserId, targetUserId } = req.body;
+    const decodedLoggedInUserId = jwt.verify(loggedInUserId, secretKey);
+    console.log("current: ", decodedLoggedInUserId.userId);
+    console.log("selected: ", targetUserId);
+    const userToUpdate = await User.findOne({
+      _id: targetUserId,
+      followers: decodedLoggedInUserId.userId,
+    });
+
+    if (userToUpdate) {
+      await User.findByIdAndUpdate(targetUserId, {
+        $pull: { followers: decodedLoggedInUserId.userId },
+      });
+
+      console.log("Okey man");
+      res.sendStatus(200);
+    } else {
+      res.status(400).json({ message: "User is not following the target user" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error in unfollowing a user" });
+  }
+});
+
+app.post("/create-post", async(req, res) => {
+  try {
+    const {content, userId} = req.body;
+    const decodedUserId = jwt.verify(userId, secretKey);
+    const newPostData = {
+      user: decodedUserId.userId,
+    }
+    console.log(decodedUserId.userId);
+    if (content) {
+      newPostData.content = content;
+    }
+    const newPost = new Post(newPostData)
+    await newPost.save();
+    res.status(200).json({message: "Post saved successfully"})
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "post creation failed"})
+  }
+})
+
+
+app.put("/posts/:postId/:userId/like", async(req, res) => {
+  try {
+    const postId = req.params.postId
+    const userId = req.params.userId
+    const decodedUserId = jwt.verify(userId, secretKey);
+    const post = await Post.findById(postId).populate("user", "fullName")
+    const updatedPost = await Post.findByIdAndUpdate( 
+      postId,
+      {$addToSet: {likes: decodedUserId.userId}},
+      {new: true}
+    )
+
+    updatedPost.user = post.user;
+
+    if(!updatedPost) {
+      return res.status(404).json({message: "post not found"})
+    }
+    res.json(updatedPost);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "an error occurred while liking"})
+  }
+})
+
+
+app.put("/posts/:postId/:userId/unlike", async(req, res) => {
+  try {
+    const postId = req.params.postId
+    const userId = req.params.userId
+    const decodedUserId = jwt.verify(userId, secretKey);
+    const post = await Post.findById(postId).populate("user", "fullName")
+    const updatedPost = await Post.findByIdAndUpdate( 
+      postId,
+      {$pull: {likes: decodedUserId.userId}},
+      {new: true}
+    )
+
+    updatedPost.user = post.user;
+
+    if(!updatedPost) {
+      return res.status(404).json({message: "post not found"})
+    }
+    res.json(updatedPost);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "an error occurred while liking"})
+  }
+})
+
+
+app.get("/get-posts", async(req, res) => {
+  try {
+    const posts = await Post.find().populate("user", "fullName").sort({createdAt: -1})
+    res.status(200).json(posts)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "An error occurred while getting the posts"})
+  }
+})
+
+app.get("/decode/:userId", async(req, res) => {
+  try {
+    const userId = req.params.userId
+    const decodedUserId = jwt.verify(userId, secretKey);
+    res.status(200).json(decodedUserId.userId)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "An error occurred while decoding token to id"})
+  }
+})
+
+
+app.get("/profile/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const decodedUserId = await jwt.verify(userId, secretKey);
+    const user = await User.findById(decodedUserId.userId);
+
+
+    console.log("user: ",user);
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "An error occurred while getting user" });
+  }
+});
+
+app.get("/posts/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const decodedUserId = await jwt.verify(userId, secretKey);
+    const posts = await Post.find({user: decodedUserId.userId}).populate("user", "fullName").sort({createdAt: -1})
+    console.log(posts);
+    res.status(200).json(posts)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "An error occurred while getting posts" });
+  }
+})
