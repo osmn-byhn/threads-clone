@@ -14,13 +14,12 @@ const HomeScreen = () => {
     const fetchUsers = async () => {
       const token = await AsyncStorage.getItem("authToken");
       setUserId(token);
-      const response = await axios.get(`http://192.168.136.159:4000/decode/${userId}`)
+      const response = await axios.get(`http://192.168.1.39:4000/decode/${userId}`)
       setSoftId(response.data)
       console.log("softId: ", softId);
     };
 
     fetchUsers();
-  
   }, []);
   useEffect(() => {
     fetchPost();
@@ -32,7 +31,7 @@ const HomeScreen = () => {
   )
   const fetchPost = async() => {
     try {
-      const response = await axios.get("http://192.168.136.159:4000/get-posts/")
+      const response = await axios.get("http://192.168.1.39:4000/get-posts/")
       setPosts(response.data)
     } catch (error) {
       console.log("error fetching posts: ", error);
@@ -41,7 +40,7 @@ const HomeScreen = () => {
   console.log("posts: ", posts);
   const handleLike = async(postId) => {
     try {
-      const response = await axios.put(`http://192.168.136.159:4000/posts/${postId}/${userId}/like`);
+      const response = await axios.put(`http://192.168.1.39:4000/posts/${postId}/${userId}/like`);
       const updatedPost = response.data;
       const updatedPosts = posts?.map((post) => post?._id === updatedPost._id ? updatedPost : post);
       setPosts(updatedPosts)
@@ -53,7 +52,7 @@ const HomeScreen = () => {
   const handleDislike = async (postId) => {
     try {
       const response = await axios.put(
-        `http://192.168.136.159:4000/posts/${postId}/${userId}/unlike`
+        `http://192.168.1.39:4000/posts/${postId}/${userId}/unlike`
       );
       const updatedPost = response.data;
       // Update the posts array with the updated post
@@ -85,18 +84,18 @@ const HomeScreen = () => {
       Alert.alert(error.message);
     }
   };
+
   return (
     <ScrollView style={{ backgroundColor: "white"}}>
       <View style={{alignItems: "center", marginTop: 20}}>
         <Image style={{width: 60, height:40, resizeMode: "contain"}} source={{uri: "https://freelogopng.com/images/all_img/1688663386threads-logo-transparent.png"}} />
       </View>
-
       <View style={{marginTop: 20}}>
         {posts?.map((post,index) => (
           <View style={{padding: 15,  borderColor: "#d0d0d0", borderTopWidth: 1, }} key={index}>
             <View style={{flexDirection: "row", gap: 10}}>
               <View style={{flexDirection: "row"}}>
-                <Image style={{width: 40, height: 40, borderRadius: 20, resizeMode: "contain"}} source={{uri: "https://cdn-icons-png.flaticon.com/128/149/149071.png"}} />
+                <Image style={{width: 40, height: 40, borderRadius: 20, resizeMode: "contain"}} source={{uri: post?.user?.profilePicture}} />
               </View>
               <View>
                 <Text style={{fontWeight: "700", fontSize: 16}}>{post?.user?.fullName}</Text>
@@ -105,14 +104,12 @@ const HomeScreen = () => {
             </View>
             <View style={{flexDirection: "row", gap: 10, marginTop: 15}}>
               {post?.likes?.includes(softId) ?  (
-                
                 <AntDesign
                   onPress={() => handleDislike(post?._id)}
                   name="heart"
                   size={22}
                   color="red"
                 />
-                
                 ) : (
                   <AntDesign
                     onPress={() => handleLike(post?._id)}
@@ -129,14 +126,12 @@ const HomeScreen = () => {
             <Text style={{ marginTop: 7, color: "gray" }}>
               {post?.likes?.length} likes • {post?.replies?.length} reply
             </Text>
-
           </View>
         ))}
       </View>
     </ScrollView>
   )
 }
-
 export default HomeScreen
 
 const styles = StyleSheet.create({})

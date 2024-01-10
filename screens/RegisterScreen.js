@@ -1,27 +1,30 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView,TextInput, Pressable, Alert } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView,TextInput, Pressable, Alert, ScrollView } from 'react-native'
 import React, { useState } from 'react'
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons, AntDesign  } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
 const LoginScreen = () => {
   const [fullname, setFullname] = useState("")
+  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const navigation = useNavigation()
   const handleRegister = async () => {
     const user = {
       fullName: fullname,
+      username: username,
       email: email,
       password: password
     };
   
     try {
-      const response = await axios.post("http://192.168.136.159:4000/register", user);
+      const response = await axios.post("http://192.168.1.39:4000/register", user);
       console.log(response);
       Alert.alert("Registration successful. You have been registered successfully");
       setFullname("");
       setEmail("");
+      setUsername("")
       setPassword("");
     } catch (error) {
       Alert.alert("Registration failed. An error occurred during registration");
@@ -30,7 +33,8 @@ const LoginScreen = () => {
   };
   
   return (
-    <SafeAreaView
+    <ScrollView>
+      <SafeAreaView
       style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
     >
       <View style={{ marginTop: 70 }}>
@@ -48,12 +52,14 @@ const LoginScreen = () => {
         </View>
         <View style={{marginTop: 40}}>
 
-        <View style={{width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5}}>
+          <View style={{width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5}}>
             <Ionicons name="person" size={24} color="gray"  style={{marginLeft:15}} />
             <TextInput value={fullname} onChangeText={(text) => setFullname(text)} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your fullname'/>
           </View>
-
-
+          <View style={{width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5, marginTop: 20}}>
+            <AntDesign name="idcard" size={24} color="gray"  style={{marginLeft:15}} />
+            <TextInput value={username} onChangeText={(text) => setUsername(text)} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your username'/>
+          </View>
           <View style={{width: 350, flexDirection: "row", alignItems: "center", gap: 5, borderColor: "#d0d0d0", borderWidth: 1, paddingVertical:5, borderRadius:5,marginTop: 20}}>
             <MaterialIcons name="email" size={24} color="gray"  style={{marginLeft:15}} />
             <TextInput value={email} onChangeText={(text) => setEmail(text)} style={{width:300, color: "gray", marginVertical: 10}} placeholder='enter your email'/>
@@ -79,6 +85,7 @@ const LoginScreen = () => {
 
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </ScrollView>
   )
 }
 

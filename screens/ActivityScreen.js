@@ -19,7 +19,7 @@ const ActivityScreen = () => {
         const token = await AsyncStorage.getItem("authToken");
         setUserId(token);
         axios
-          .get(`http://192.168.136.159:4000/user/${userId}`)
+          .get(`http://192.168.1.39:4000/user/${userId}`)
           .then((response) => {
             setUsers(response.data);
           })
@@ -54,7 +54,6 @@ const ActivityScreen = () => {
                             { textAlign: "center", fontWeight: "bold" }, selectedButton === "people" ? { color: "white" } : { color: "black" }
                         ]}>People</Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity
                         onPress={() => handleButtonClick("all")}
                         style={[

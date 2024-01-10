@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5b06bd8c-4fe0-4fd6-81d0-d30ebf2b5664"
+      }
+    },
+    "owner": "mryzilim"
   }
 }

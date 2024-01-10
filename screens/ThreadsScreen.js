@@ -17,7 +17,7 @@ const ThreadsScreen = () => {
       postData.content = content
     }
 
-    axios.post(`http://192.168.136.159:4000/create-post/`,postData).then((response) => {
+    axios.post(`http://192.168.1.39:4000/create-post/`,postData).then((response) => {
       console.log(response);
       setContent("")
     }).catch((error) => {
@@ -28,7 +28,7 @@ const ThreadsScreen = () => {
     <SafeAreaView style={{ padding: 10, marginTop: 20}}>
       <View style={{flexDirection: "row", alignItems: "center", gap: 10, padding: 10}}>
         <Image style={{width: 40, height: 40, borderRadius: 20, resizeMode: "contain"}} source={{uri: "https://cdn-icons-png.flaticon.com/128/149/149071.png"}} />
-        <Text style={{fontSize: 16, fontWeight: "bold"}}>Osman Beyhan</Text>
+        <Text style={{fontSize: 16, fontWeight: "bold"}}>Create Post</Text>
       </View>
       <View style={{flexDirection: "row", marginLeft: 10, marginTop: 12}}>
         <TextInput value={content} onChangeText={(text) => setContent(text)} placeholder='Type your message...' multiline />

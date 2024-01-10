@@ -7,7 +7,7 @@ const Users = ({item}) => {
   const [requestSent, setRequestSent] = useState(false)
   const sendFollow = async (currentUserId, selectedUserId) => {
     try {
-        const response = await fetch(`http://192.168.136.159:4000/follow`, {
+        const response = await fetch(`http://192.168.1.39:4000/follow`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -24,7 +24,7 @@ const Users = ({item}) => {
   }
   const handleUnfollow = async (targetId) => {
     try {
-        const response = await fetch(`http://192.168.136.159:4000/users/unfollow`, {
+        const response = await fetch(`http://192.168.1.39:4000/users/unfollow`, {
             method: "POST",
             headers: {
                 "Content-Type" : "application/json",

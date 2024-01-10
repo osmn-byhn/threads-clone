@@ -6,14 +6,13 @@ const nodemailer = require('nodemailer')
 const cors = require('cors')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
-
+const { GridFsStorage } = require('multer-gridfs-storage');
+const multer = require('multer');
+const path = require('path');
 const app = express();
 dotenv.config();
 app.use(cors());
-
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json());
-
+app.use(express.json({ limit: '10mb' }));
 
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,
@@ -23,25 +22,26 @@ mongoose.connect(process.env.MONGO_URL, {
 }).catch((err) => {
   console.log("Error Connecting to Mongodb: ", err);
 })
-
 app.listen(process.env.PORT, () => {
   console.log("server running on: ", process.env.PORT);
 })
-
 const User = require("./models/user")
 const Post = require("./models/post")
-
-
-
 const secretKey = "secretKey"
 app.post("/register", async (req, res) => {
   try {
-    const { fullName, email, password } = req.body;
+    const { fullName, username, email, password } = req.body;
     const existingUser = await User.findOne({ email })
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered" })
     }
-    const newUser = new User({ fullName, email, password });
+    const existingUsername = await User.findOne({ username })
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already registered" })
+    }
+    
+    const newUser = new User({ fullName, username, email, password });
+    console.log("username: ", newUser);
     newUser.verificationToken = crypto.randomBytes(20).toString("hex")
     await newUser.save();
     sendVerificationEmail(newUser.email, newUser.verificationToken)
@@ -51,6 +51,37 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ message: "error registering user" })
   }
 })
+
+
+app.put("/edit-profile/:userId", async (req, res) => {
+  try {
+    const { fullName, username, password, biography, profilePicture } = req.body;
+    const userId = req.params.userId;
+    const decodedUserId = jwt.verify(userId, secretKey);
+    const updatedUser = await User.findByIdAndUpdate(
+      decodedUserId.userId,
+      {
+        fullName,
+        username,
+        password,
+        biography,
+        profilePicture
+      }
+    );
+
+    if (username) {
+      const existingUsername = await User.findOne({ username, _id: { $ne: decodedUserId.userId } });
+      if (existingUsername) {
+        return res.status(400).json({ message: "Username already registered" });
+      }
+    }
+
+    res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+  } catch (error) {
+    console.log("Error updating profile:", error);
+    res.status(500).json({ message: "An error occurred while updating the profile" });
+  }
+});
 
 const sendVerificationEmail = async (email, verificationToken) => {
   const transporter = nodemailer.createTransport({
@@ -267,7 +298,7 @@ app.put("/posts/:postId/:userId/unlike", async(req, res) => {
 
 app.get("/get-posts", async(req, res) => {
   try {
-    const posts = await Post.find().populate("user", "fullName").sort({createdAt: -1})
+    const posts = await Post.find().populate("user", "fullName username profilePicture").sort({createdAt: -1});
     res.status(200).json(posts)
   } catch (error) {
     console.log(error);
