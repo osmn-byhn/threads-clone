@@ -251,7 +251,7 @@ app.put("/posts/:postId/:userId/like", async(req, res) => {
     const postId = req.params.postId
     const userId = req.params.userId
     const decodedUserId = jwt.verify(userId, secretKey);
-    const post = await Post.findById(postId).populate("user", "fullName")
+    const post = await Post.findById(postId).populate("user", "fullName username profilePicture")
     const updatedPost = await Post.findByIdAndUpdate( 
       postId,
       {$addToSet: {likes: decodedUserId.userId}},
@@ -276,7 +276,7 @@ app.put("/posts/:postId/:userId/unlike", async(req, res) => {
     const postId = req.params.postId
     const userId = req.params.userId
     const decodedUserId = jwt.verify(userId, secretKey);
-    const post = await Post.findById(postId).populate("user", "fullName")
+    const post = await Post.findById(postId).populate("user", "fullName username profilePicture")
     const updatedPost = await Post.findByIdAndUpdate( 
       postId,
       {$pull: {likes: decodedUserId.userId}},
@@ -337,7 +337,7 @@ app.get("/posts/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
     const decodedUserId = await jwt.verify(userId, secretKey);
-    const posts = await Post.find({user: decodedUserId.userId}).populate("user", "fullName").sort({createdAt: -1})
+    const posts = await Post.find({user: decodedUserId.userId}).populate("user", "fullName username profilePicture").sort({createdAt: -1})
     console.log(posts);
     res.status(200).json(posts)
   } catch (error) {
