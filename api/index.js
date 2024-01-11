@@ -148,17 +148,11 @@ app.post("/login", async(req, res) => {
 app.get("/user/:userId", (req, res) => {
   try {
     const loggedInUserId = req.params.userId;
-
-    // Token'ı decode et
     jwt.verify(loggedInUserId, secretKey, (err, decoded) => {
       if (err) {
         return res.status(400).json({ message: "Invalid token" });
       }
-
-      // Token içindeki kullanıcı ID'sini al
       const userId = decoded.userId;
-
-      // MongoDB sorgusu
       User.find({  _id: { $ne: userId }  })
         .then((users) => {
           console.log(users);
@@ -178,16 +172,12 @@ app.get("/user/:userId", (req, res) => {
 app.post("/follow", async (req, res) => {
   try {
     const { currentUserId, selectedUserId } = req.body;
-    // Verify both currentUserId and selectedUserId are JWTs
     const decodedCurrentUserId = jwt.verify(currentUserId, secretKey);
-
-    
     await User.findByIdAndUpdate(selectedUserId, {
       $push: { followers: decodedCurrentUserId.userId },
     });
     console.log("current: ", decodedCurrentUserId);
     console.log("selected: ", selectedUserId);
-    
     console.log("Okey man");
     res.sendStatus(200)
   } catch (error) {
@@ -257,9 +247,7 @@ app.put("/posts/:postId/:userId/like", async(req, res) => {
       {$addToSet: {likes: decodedUserId.userId}},
       {new: true}
     )
-
     updatedPost.user = post.user;
-
     if(!updatedPost) {
       return res.status(404).json({message: "post not found"})
     }
@@ -282,9 +270,7 @@ app.put("/posts/:postId/:userId/unlike", async(req, res) => {
       {$pull: {likes: decodedUserId.userId}},
       {new: true}
     )
-
     updatedPost.user = post.user;
-
     if(!updatedPost) {
       return res.status(404).json({message: "post not found"})
     }
@@ -323,8 +309,6 @@ app.get("/profile/:userId", async (req, res) => {
     const userId = req.params.userId;
     const decodedUserId = await jwt.verify(userId, secretKey);
     const user = await User.findById(decodedUserId.userId);
-
-
     console.log("user: ",user);
     res.status(200).json(user);
   } catch (error) {
@@ -363,6 +347,19 @@ app.post("/post-replies/:postId/:userId", async (req, res) => {
       return res.status(404).json({message: "post not found"})
     }
     res.json(updatedPost);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "an error occurred while repling"})
+  }
+})
+
+app.get("/post-replies/:postId", async (req, res) => {
+  try {
+    const postId = req.params.postId
+    const post = await Post.findById(postId).populate("user", "fullName username profilePicture")
+    const replies = await post.replies
+    console.log("successfully reply: ", replies);
+    res.json(replies);
   } catch (error) {
     console.log(error);
     res.status(500).json({message: "an error occurred while repling"})

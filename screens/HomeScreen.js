@@ -1,8 +1,8 @@
 import "react-native-gesture-handler";
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Alert, Share, Touchable,Button, Pressable, Switch, useWindowDimensions } from 'react-native'
-import React, { useState, useEffect, useContext, useCallback, useRef  } from "react";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Alert, Share, Touchable, Button, Pressable, Switch, useWindowDimensions } from 'react-native'
+import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AntDesign, MaterialCommunityIcons , Feather, Entypo} from '@expo/vector-icons';
+import { AntDesign, MaterialCommunityIcons, Feather, Entypo } from '@expo/vector-icons';
 import axios from "axios";
 import { UserType } from "../UserContext";
 import { useFocusEffect } from '@react-navigation/native';
@@ -12,29 +12,20 @@ import { StatusBar } from "expo-status-bar";
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const HomeScreen = ({navigation}) => {
-
-
-
+const HomeScreen = ({ navigation }) => {
   const [darkmode, setDarkmode] = useState(false);
   const [device, setDevice] = useState(false);
   const { width } = useWindowDimensions();
   const [theme, setTheme] = useState("dim");
   const [isOpen, setIsOpen] = useState(false);
-
   const bottomSheetModalRef = useRef(null);
-
   const snapPoints = ["25%", "48%", "75%"];
-
   function handlePresentModal() {
     bottomSheetModalRef.current?.present();
     setTimeout(() => {
       setIsOpen(true);
     }, 100);
   }
-
-
-
   const { userId, setUserId } = useContext(UserType);
   const [softId, setSoftId] = useState("")
   const [posts, setPosts] = useState([])
@@ -50,13 +41,13 @@ const HomeScreen = ({navigation}) => {
   }, []);
   useEffect(() => {
     fetchPost();
-  },[])
+  }, [])
   useFocusEffect(
     useCallback(() => {
       fetchPost();
     }, [])
   )
-  const fetchPost = async() => {
+  const fetchPost = async () => {
     try {
       const response = await axios.get("https://threads-backend-c6ms.onrender.com/get-posts/")
       setPosts(response.data)
@@ -65,7 +56,7 @@ const HomeScreen = ({navigation}) => {
     }
   }
   console.log("posts: ", posts);
-  const handleLike = async(postId) => {
+  const handleLike = async (postId) => {
     try {
       const response = await axios.put(`https://threads-backend-c6ms.onrender.com/posts/${postId}/${userId}/like`);
       const updatedPost = response.data;
@@ -86,8 +77,8 @@ const HomeScreen = ({navigation}) => {
       const updatedPosts = posts.map((post) =>
         post._id === updatedPost._id ? updatedPost : post
       );
-      console.log("updated ",updatedPosts)
-    
+      console.log("updated ", updatedPosts)
+
       setPosts(updatedPosts);
     } catch (error) {
       console.error("Error unliking post:", error);
@@ -115,52 +106,52 @@ const HomeScreen = ({navigation}) => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
-    <ScrollView style={{ backgroundColor: isOpen ? "gray" : "white" }}>
-      <View style={{alignItems: "center", marginTop: 20}}>
-        <Image style={{width: 60, height:40, resizeMode: "contain"}} source={{uri: "https://freelogopng.com/images/all_img/1688663386threads-logo-transparent.png"}}  />
-      </View>
-      <View style={{marginTop: 20}}>
-        {posts?.map((post,index) => (
-          <View style={{padding: 15,  borderColor: "#d0d0d0", borderTopWidth: 1, }} key={index}>
-            <View style={{flexDirection: "row", gap: 10}}>
-              <View style={{flexDirection: "row"}}>
-                <Image style={{width: 40, height: 40, borderRadius: 20, resizeMode: "contain"}} source={{uri: post?.user?.profilePicture}} />
-              </View>
-              <View>
-                <Text style={{fontWeight: "700", fontSize: 16}}>{post?.user?.fullName}</Text>
-                <Text>{post?.content}</Text>
-              </View>
-            </View>
-            <View style={{flexDirection: "row", gap: 10, marginTop: 15}}>
-              {post?.likes?.includes(softId) ?  (
-                <AntDesign
-                  onPress={() => handleDislike(post?._id)}
-                  name="heart"
-                  size={22}
-                  color="red"
-                />
-                ) : (
-                  <AntDesign
-                    onPress={() => handleLike(post?._id)}
-                    name="hearto"
-                    size={22}
-                    color="black"
-                  />
-                )}
-                <TouchableOpacity onPress={handlePresentModal} >
-                <MaterialCommunityIcons name="comment-outline" size={22} color="black" />
-
-                </TouchableOpacity>
-              <TouchableOpacity  onPress={onShare}>
-                <Feather name="share" size={22} color="black" />
-              </TouchableOpacity>
-            </View>
-            <Text style={{ marginTop: 7, color: "gray" }}>
-              {post?.likes?.length} likes • {post?.replies?.length} reply
-            </Text>
+        <ScrollView style={{ backgroundColor: isOpen ? "gray" : "white" }}>
+          <View style={{ alignItems: "center", marginTop: 20 }}>
+            <Image style={{ width: 60, height: 40, resizeMode: "contain" }} source={{ uri: "https://freelogopng.com/images/all_img/1688663386threads-logo-transparent.png" }} />
           </View>
-        ))}
-      </View>
+          <View style={{ marginTop: 20 }}>
+            {posts?.map((post, index) => (
+              <View style={{ padding: 15, borderColor: "#d0d0d0", borderTopWidth: 1, }} key={index}>
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <View style={{ flexDirection: "row" }}>
+                    <Image style={{ width: 40, height: 40, borderRadius: 20, resizeMode: "contain" }} source={{ uri: post?.user?.profilePicture }} />
+                  </View>
+                  <View>
+                    <Text style={{ fontWeight: "700", fontSize: 16 }}>{post?.user?.fullName}</Text>
+                    <Text>{post?.content}</Text>
+                  </View>
+                </View>
+                <View style={{ flexDirection: "row", gap: 10, marginTop: 15 }}>
+                  {post?.likes?.includes(softId) ? (
+                    <AntDesign
+                      onPress={() => handleDislike(post?._id)}
+                      name="heart"
+                      size={22}
+                      color="red"
+                    />
+                  ) : (
+                    <AntDesign
+                      onPress={() => handleLike(post?._id)}
+                      name="hearto"
+                      size={22}
+                      color="black"
+                    />
+                  )}
+                  <TouchableOpacity onPress={handlePresentModal} >
+                    <MaterialCommunityIcons name="comment-outline" size={22} color="black" />
+
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={onShare}>
+                    <Feather name="share" size={22} color="black" />
+                  </TouchableOpacity>
+                </View>
+                <Text style={{ marginTop: 7, color: "gray" }}>
+                  {post?.likes?.length} likes • {post?.replies?.length} reply
+                </Text>
+              </View>
+            ))}
+          </View>
           <BottomSheetModal
             ref={bottomSheetModalRef}
             index={1}
@@ -217,8 +208,8 @@ const HomeScreen = ({navigation}) => {
               </Pressable>
             </View>
           </BottomSheetModal>
-    </ScrollView>
-    </BottomSheetModalProvider>
+        </ScrollView>
+      </BottomSheetModalProvider>
     </GestureHandlerRootView>
   )
 }
