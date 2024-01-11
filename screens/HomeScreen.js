@@ -14,7 +14,7 @@ const HomeScreen = () => {
     const fetchUsers = async () => {
       const token = await AsyncStorage.getItem("authToken");
       setUserId(token);
-      const response = await axios.get(`http://192.168.1.39:4000/decode/${userId}`)
+      const response = await axios.get(`https://threads-backend-c6ms.onrender.com/decode/${userId}`)
       setSoftId(response.data)
       console.log("softId: ", softId);
     };
@@ -31,7 +31,7 @@ const HomeScreen = () => {
   )
   const fetchPost = async() => {
     try {
-      const response = await axios.get("http://192.168.1.39:4000/get-posts/")
+      const response = await axios.get("https://threads-backend-c6ms.onrender.com/get-posts/")
       setPosts(response.data)
     } catch (error) {
       console.log("error fetching posts: ", error);
@@ -40,7 +40,7 @@ const HomeScreen = () => {
   console.log("posts: ", posts);
   const handleLike = async(postId) => {
     try {
-      const response = await axios.put(`http://192.168.1.39:4000/posts/${postId}/${userId}/like`);
+      const response = await axios.put(`https://threads-backend-c6ms.onrender.com/posts/${postId}/${userId}/like`);
       const updatedPost = response.data;
       const updatedPosts = posts?.map((post) => post?._id === updatedPost._id ? updatedPost : post);
       setPosts(updatedPosts)
@@ -52,7 +52,7 @@ const HomeScreen = () => {
   const handleDislike = async (postId) => {
     try {
       const response = await axios.put(
-        `http://192.168.1.39:4000/posts/${postId}/${userId}/unlike`
+        `https://threads-backend-c6ms.onrender.com/posts/${postId}/${userId}/unlike`
       );
       const updatedPost = response.data;
       // Update the posts array with the updated post

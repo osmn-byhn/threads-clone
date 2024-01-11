@@ -17,7 +17,7 @@ const ThreadsScreen = () => {
       postData.content = content
     }
 
-    axios.post(`http://192.168.1.39:4000/create-post/`,postData).then((response) => {
+    axios.post(`https://threads-backend-c6ms.onrender.com/create-post/`,postData).then((response) => {
       console.log(response);
       setContent("")
     }).catch((error) => {

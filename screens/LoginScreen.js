@@ -35,7 +35,7 @@ const LoginScreen = () => {
       password: password
     };
     try {
-      const response = await axios.post("http://192.168.1.39:4000/login", user);
+      const response = await axios.post("https://threads-backend-c6ms.onrender.com/login", user);
       console.log(response);
       const token = response.data.token;
       AsyncStorage.setItem("authToken", token)

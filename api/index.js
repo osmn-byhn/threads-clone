@@ -251,7 +251,7 @@ app.put("/posts/:postId/:userId/like", async(req, res) => {
     const postId = req.params.postId
     const userId = req.params.userId
     const decodedUserId = jwt.verify(userId, secretKey);
-    const post = await Post.findById(postId).populate("user", "fullName",  "pictureProfil")
+    const post = await Post.findById(postId).populate("user", "fullName")
     const updatedPost = await Post.findByIdAndUpdate( 
       postId,
       {$addToSet: {likes: decodedUserId.userId}},
@@ -276,7 +276,7 @@ app.put("/posts/:postId/:userId/unlike", async(req, res) => {
     const postId = req.params.postId
     const userId = req.params.userId
     const decodedUserId = jwt.verify(userId, secretKey);
-    const post = await Post.findById(postId).populate("user", "fullName",  "pictureProfil")
+    const post = await Post.findById(postId).populate("user", "fullName")
     const updatedPost = await Post.findByIdAndUpdate( 
       postId,
       {$pull: {likes: decodedUserId.userId}},

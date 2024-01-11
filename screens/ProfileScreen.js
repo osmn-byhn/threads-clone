@@ -23,7 +23,7 @@ const ProfileScreen = ({navigation}) => {
     const fetchUsers = async () => {
       const token = await AsyncStorage.getItem("authToken");
       setUserId(token);
-      const response = await axios.get(`http://192.168.56.1:4000/decode/${userId}`)
+      const response = await axios.get(`https://threads-backend-c6ms.onrender.com/decode/${userId}`)
       setSoftId(response.data)
       console.log("softId: ", softId);
     };
@@ -33,8 +33,8 @@ const ProfileScreen = ({navigation}) => {
     try {
       const token = await AsyncStorage.getItem("authToken");
       setUserId(token);
-      const response = await axios.get(`http://192.168.56.1:4000/profile/${token}`);
-      const posts = await axios.get(`http://192.168.56.1:4000/posts/${token}`)
+      const response = await axios.get(`https://threads-backend-c6ms.onrender.com/profile/${token}`);
+      const posts = await axios.get(`https://threads-backend-c6ms.onrender.com/posts/${token}`)
       const userData = response.data;
       setPosts(posts.data)
       console.log("user: ", userData);
@@ -49,7 +49,7 @@ const ProfileScreen = ({navigation}) => {
   }, []);
   const handleLike = async(postId) => {
     try {
-      const response = await axios.put(`http://192.168.56.1:4000/posts/${postId}/${userId}/like`);
+      const response = await axios.put(`https://threads-backend-c6ms.onrender.com/posts/${postId}/${userId}/like`);
       const updatedPost = response.data;
       const updatedPosts = posts?.map((post) => post?._id === updatedPost._id ? updatedPost : post);
       setPosts(updatedPosts)
@@ -61,7 +61,7 @@ const ProfileScreen = ({navigation}) => {
   const handleDislike = async (postId) => {
     try {
       const response = await axios.put(
-        `http://192.168.56.1:4000/posts/${postId}/${userId}/unlike`
+        `https://threads-backend-c6ms.onrender.com/posts/${postId}/${userId}/unlike`
       );
       const updatedPost = response.data;
       const updatedPosts = posts.map((post) =>

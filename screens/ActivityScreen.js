@@ -19,7 +19,7 @@ const ActivityScreen = () => {
         const token = await AsyncStorage.getItem("authToken");
         setUserId(token);
         axios
-          .get(`http://192.168.1.39:4000/user/${userId}`)
+          .get(`https://threads-backend-c6ms.onrender.com/user/${userId}`)
           .then((response) => {
             setUsers(response.data);
           })

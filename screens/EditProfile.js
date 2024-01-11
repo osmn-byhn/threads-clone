@@ -33,7 +33,7 @@ const EditProfile = ({ navigation }) => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.39:4000/profile/${userId}`);
+        const response = await axios.get(`https://threads-backend-c6ms.onrender.com/profile/${userId}`);
         const userData = response.data;
         setUsername(userData.username);
         setFullname(userData.fullName);
@@ -104,7 +104,7 @@ const EditProfile = ({ navigation }) => {
     };
   
     try {
-      const response = await axios.put(`http://192.168.1.39:4000/edit-profile/${userId}`, editedUser);
+      const response = await axios.put(`https://threads-backend-c6ms.onrender.com/edit-profile/${userId}`, editedUser);
       console.log(response);
       Alert.alert('Editing successful. You have edited your account successfully');
     } catch (error) {
