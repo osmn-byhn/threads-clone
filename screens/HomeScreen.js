@@ -1,12 +1,40 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Alert, Share } from 'react-native'
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import "react-native-gesture-handler";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Alert, Share, Touchable,Button, Pressable, Switch, useWindowDimensions } from 'react-native'
+import React, { useState, useEffect, useContext, useCallback, useRef  } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AntDesign, MaterialCommunityIcons , Feather } from '@expo/vector-icons';
+import { AntDesign, MaterialCommunityIcons , Feather, Entypo} from '@expo/vector-icons';
 import axios from "axios";
 import { UserType } from "../UserContext";
 import { useFocusEffect } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { StatusBar } from "expo-status-bar";
+import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
+
+
+
+  const [darkmode, setDarkmode] = useState(false);
+  const [device, setDevice] = useState(false);
+  const { width } = useWindowDimensions();
+  const [theme, setTheme] = useState("dim");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const bottomSheetModalRef = useRef(null);
+
+  const snapPoints = ["25%", "48%", "75%"];
+
+  function handlePresentModal() {
+    bottomSheetModalRef.current?.present();
+    setTimeout(() => {
+      setIsOpen(true);
+    }, 100);
+  }
+
+
+
   const { userId, setUserId } = useContext(UserType);
   const [softId, setSoftId] = useState("")
   const [posts, setPosts] = useState([])
@@ -18,7 +46,6 @@ const HomeScreen = () => {
       setSoftId(response.data)
       console.log("softId: ", softId);
     };
-
     fetchUsers();
   }, []);
   useEffect(() => {
@@ -86,9 +113,11 @@ const HomeScreen = () => {
   };
 
   return (
-    <ScrollView style={{ backgroundColor: "white"}}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+    <ScrollView style={{ backgroundColor: isOpen ? "gray" : "white" }}>
       <View style={{alignItems: "center", marginTop: 20}}>
-        <Image style={{width: 60, height:40, resizeMode: "contain"}} source={{uri: "https://freelogopng.com/images/all_img/1688663386threads-logo-transparent.png"}} />
+        <Image style={{width: 60, height:40, resizeMode: "contain"}} source={{uri: "https://freelogopng.com/images/all_img/1688663386threads-logo-transparent.png"}}  />
       </View>
       <View style={{marginTop: 20}}>
         {posts?.map((post,index) => (
@@ -118,7 +147,10 @@ const HomeScreen = () => {
                     color="black"
                   />
                 )}
-              <MaterialCommunityIcons name="comment-outline" size={22} color="black" />
+                <TouchableOpacity onPress={handlePresentModal} >
+                <MaterialCommunityIcons name="comment-outline" size={22} color="black" />
+
+                </TouchableOpacity>
               <TouchableOpacity  onPress={onShare}>
                 <Feather name="share" size={22} color="black" />
               </TouchableOpacity>
@@ -129,7 +161,65 @@ const HomeScreen = () => {
           </View>
         ))}
       </View>
+          <BottomSheetModal
+            ref={bottomSheetModalRef}
+            index={1}
+            snapPoints={snapPoints}
+            backgroundStyle={{ borderRadius: 50 }}
+            onDismiss={() => setIsOpen(false)}
+          >
+            <View style={styles.contentContainer}>
+              <Text style={[styles.title, { marginBottom: 20 }]}>
+                Dark mode
+              </Text>
+              <View style={styles.row}>
+                <Text style={styles.subtitle}>Dark mode</Text>
+                <Switch
+                  value={darkmode}
+                  onChange={() => setDarkmode(!darkmode)}
+                />
+              </View>
+              <View style={styles.row}>
+                <Text style={styles.subtitle}>Use device settings</Text>
+                <Switch value={device} onChange={() => setDevice(!device)} />
+              </View>
+              <Text style={styles.description}>
+                Set Dark mode to use the Light or Dark selection located in your
+                device Display and Brightness settings.
+              </Text>
+              <View
+                style={{
+                  width: width,
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                  borderBottomColor: "gray",
+                  marginVertical: 30,
+                }}
+              />
+              <Text style={[styles.title, { width: "100%" }]}>Theme</Text>
+              <Pressable style={styles.row} onPress={() => setTheme("dim")}>
+                <Text style={styles.subtitle}>Dim</Text>
+                {theme === "dim" ? (
+                  <AntDesign name="checkcircle" size={24} color="#4A98E9" />
+                ) : (
+                  <Entypo name="circle" size={24} color="#56636F" />
+                )}
+              </Pressable>
+              <Pressable
+                style={styles.row}
+                onPress={() => setTheme("lightsOut")}
+              >
+                <Text style={styles.subtitle}>Lights out</Text>
+                {theme === "lightsOut" ? (
+                  <AntDesign name="checkcircle" size={24} color="#4A98E9" />
+                ) : (
+                  <Entypo name="circle" size={24} color="#56636F" />
+                )}
+              </Pressable>
+            </View>
+          </BottomSheetModal>
     </ScrollView>
+    </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   )
 }
 export default HomeScreen

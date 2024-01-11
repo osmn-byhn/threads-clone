@@ -11,6 +11,7 @@ import ActivityScreen from './screens/ActivityScreen';
 import ThreadsScreen from './screens/ThreadsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import EditProfile from './screens/EditProfile';
+import Deneme from './screens/Deneme';
 const StackNavigator = () => {
   const Tab = createBottomTabNavigator();
   const Stack = createNativeStackNavigator();
@@ -87,6 +88,8 @@ const StackNavigator = () => {
         <Stack.Screen name="Register" component={RegisterScreen} options={{headerShown: false}} />
         <Stack.Screen name="Main" component={BottomTabs} options={{headerShown: false}} />
         <Stack.Screen name="EditProfile" component={EditProfile} options={{headerShown: false}} />
+        <Stack.Screen name="Deneme" component={Deneme} options={{headerShown: false}} />
+
         <Stack.Screen name="ProfileScreen" component={BottomTabs} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
