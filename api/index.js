@@ -353,7 +353,7 @@ app.post("/post-replies/:postId/:userId", async (req, res) => {
   }
 })
 
-app.get("/post-replies/:postId", async (req, res) => {
+app.get("/get-replies/:postId", async (req, res) => {
   try {
     const postId = req.params.postId
     const post = await Post.findById(postId).populate("user", "fullName username profilePicture")
