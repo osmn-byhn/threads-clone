@@ -83,9 +83,7 @@ const EditProfile = ({ navigation }) => {
   
       if (!result.cancelled) {
         setSelectedImage(result.uri);
-  
-        // Convert the selected image to base64
-        const base64 = await FileSystem.readAsStringAsync(result.uri, {
+          const base64 = await FileSystem.readAsStringAsync(result.uri, {
           encoding: FileSystem.EncodingType.Base64,
         });
         setBase64Value("data:image/jpeg;base64,"+base64);

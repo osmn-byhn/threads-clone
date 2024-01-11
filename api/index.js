@@ -251,7 +251,7 @@ app.put("/posts/:postId/:userId/like", async(req, res) => {
     const postId = req.params.postId
     const userId = req.params.userId
     const decodedUserId = jwt.verify(userId, secretKey);
-    const post = await Post.findById(postId).populate("user", "fullName")
+    const post = await Post.findById(postId).populate("user", "fullName",  "pictureProfil")
     const updatedPost = await Post.findByIdAndUpdate( 
       postId,
       {$addToSet: {likes: decodedUserId.userId}},
@@ -276,7 +276,7 @@ app.put("/posts/:postId/:userId/unlike", async(req, res) => {
     const postId = req.params.postId
     const userId = req.params.userId
     const decodedUserId = jwt.verify(userId, secretKey);
-    const post = await Post.findById(postId).populate("user", "fullName")
+    const post = await Post.findById(postId).populate("user", "fullName",  "pictureProfil")
     const updatedPost = await Post.findByIdAndUpdate( 
       postId,
       {$pull: {likes: decodedUserId.userId}},
@@ -343,5 +343,28 @@ app.get("/posts/:userId", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "An error occurred while getting posts" });
+  }
+})
+
+app.post("/post-replies/:postId/:userId", async (req, res) => {
+  try {
+    const postId = req.params.postId
+    const decodedUserId = await jwt.verify(req.params.userId, secretKey);
+    const content = req.body;
+    const post = await Post.findById(postId).populate("user", "fullName")
+    const updatedPost = await Post.findByIdAndUpdate( 
+      postId,
+      {$addToSet: {replies: content}},
+      {new: true}
+    )
+    updatedPost.user = post.user;
+    console.log("successfully reply");
+    if(!updatedPost) {
+      return res.status(404).json({message: "post not found"})
+    }
+    res.json(updatedPost);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "an error occurred while repling"})
   }
 })

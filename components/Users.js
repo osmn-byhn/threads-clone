@@ -47,7 +47,7 @@ const Users = ({item}) => {
     <View>
         <View style={{flexDirection: "row", justifyContent: 'space-between', marginBottom: 10}}>
             <View style={{flexDirection: "row"}}>
-                <Image style={{width: 40, height: 40, borderRadius: 20, resizeMode: "contain"}} source={{uri: "https://cdn-icons-png.flaticon.com/128/149/149071.png"}} />
+                <Image style={{width: 40, height: 40, borderRadius: 20, resizeMode: "contain"}} source={{uri: item?.profilePicture}} />
                 <Text style={{fontSize: 17, fontWeight: "500", marginLeft: 15,marginTop:10 }}>{item?.fullName}</Text>
             </View>
             {requestSent || item?.followers?.includes(userId) ? (
