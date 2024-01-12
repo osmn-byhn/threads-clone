@@ -334,7 +334,7 @@ app.post("/post-replies/:postId/:userId", async (req, res) => {
   try {
     const postId = req.params.postId
     const decodedUserId = await jwt.verify(req.params.userId, secretKey);
-    const content = req.body;
+    const content = req.body.content;
     const data = {
       content: content,
       user: decodedUserId.userId
@@ -342,7 +342,7 @@ app.post("/post-replies/:postId/:userId", async (req, res) => {
     const post = await Post.findById(postId).populate("user", "fullName username profilePicture")
     const updatedPost = await Post.findByIdAndUpdate( 
       postId,
-      {$addToSet: {replies: content}},
+      {$addToSet: {replies: data}},
       {new: true}
     )
     updatedPost.user = post.user;
