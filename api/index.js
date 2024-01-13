@@ -96,7 +96,7 @@ const sendVerificationEmail = async (email, verificationToken) => {
     from: "threads.com",
     to: email,
     subject: "Email Verification",
-    text: `Please click the following link to verify your email http://localhost:${process.env.PORT}/verify/${verificationToken}`,
+    text: `Please click the following link to verify your email https://threads-backend-c6ms.onrender.com/verify/${verificationToken}`,
   };
 
   try {
@@ -361,10 +361,7 @@ app.get("/get-replies/:postId", async (req, res) => {
   try {
     const postId = req.params.postId;
     const post = await Post.findById(postId).populate("user", "fullName username profilePicture");
-    
-    // Kullanıcının yanıtlarını alırken kullanıcı verilerini de getir.
     const replies = await Post.populate(post.replies, { path: "user", select: "fullName username profilePicture" });
-    
     console.log("Successfully retrieved replies: ", replies);
     res.json(replies);
   } catch (error) {

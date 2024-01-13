@@ -11,7 +11,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from "expo-status-bar";
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
 const HomeScreen = ({ navigation }) => {
   const [darkmode, setDarkmode] = useState(false);
   const [device, setDevice] = useState(false);
@@ -24,6 +23,8 @@ const HomeScreen = ({ navigation }) => {
   const { userId, setUserId } = useContext(UserType);
   const [softId, setSoftId] = useState("")
   const [posts, setPosts] = useState([])
+  const [ content, setContent ] = useState("")
+  const [postIdOne, setPostIdOne] = useState("")
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,15 +32,14 @@ const HomeScreen = ({ navigation }) => {
         setUserId(token);
         const response = await axios.get(`https://threads-backend-c6ms.onrender.com/decode/${token}`);
         setSoftId(response.data);
+        console.log("softId: ", softId);
       } catch (error) {
         console.log("Error fetching user data: ", error);
       }
     };
-
     fetchData();
-    fetchPost(); // İlk render'da postları da çekelim.
+    fetchPost();
   }, [userId]);
-
   const fetchPost = async () => {
     try {
       const response = await axios.get("https://threads-backend-c6ms.onrender.com/get-posts/");
@@ -48,7 +48,6 @@ const HomeScreen = ({ navigation }) => {
       console.log("Error fetching posts: ", error);
     }
   };
-
   const handleLike = async (postId) => {
     try {
       const response = await axios.put(`https://threads-backend-c6ms.onrender.com/posts/${postId}/${userId}/like`);
@@ -59,7 +58,6 @@ const HomeScreen = ({ navigation }) => {
       console.log("Error liking the post: ", error);
     }
   };
-
   const handleDislike = async (postId) => {
     try {
       const response = await axios.put(
@@ -72,7 +70,6 @@ const HomeScreen = ({ navigation }) => {
       console.error("Error unliking post:", error);
     }
   };
-
   const onShare = async () => {
     try {
       const result = await Share.share({
@@ -80,7 +77,6 @@ const HomeScreen = ({ navigation }) => {
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          // shared with activity type of result.activityType
         } else {
         }
       } else if (result.action === Share.dismissedAction) {
@@ -90,27 +86,41 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  
+  
   const getReplies = async (postId) => {
     try {
       const response = await axios.get(`https://threads-backend-c6ms.onrender.com/get-replies/${postId}`);
       setReplies(response.data);
+      setPostIdOne(postId)
       handlePresentModal();
       console.log("response: ", response.data);
     } catch (error) {
       console.log("Error fetching replies: ", error);
     }
   };
-  
-
   const handlePresentModal = useCallback(() => {
     bottomSheetModalRef.current?.present();
     setIsOpen(true);
   }, []);
-
   const handleCommentPress = (postId) => {
     getReplies(postId);
   };
 
+  const postReplies = async (postId) => {
+    try {
+      const response = await axios.post(`http://192.168.56.1:4000/post-replies/${postId}/${userId}`, {content} );
+      console.log(response);
+      setContent("")
+      getReplies()
+      fetchPost()
+      console.log("oldu amk");
+    } catch (error) {
+      setContent("")
+      console.log("error: ", error);
+    }
+  }
+  
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <BottomSheetModalProvider>
@@ -132,19 +142,9 @@ const HomeScreen = ({ navigation }) => {
                 </View>
                 <View style={{ flexDirection: "row", gap: 10, marginTop: 15 }}>
                   {post?.likes?.includes(softId) ? (
-                    <AntDesign
-                      onPress={() => handleDislike(post?._id)}
-                      name="heart"
-                      size={22}
-                      color="red"
-                    />
+                    <AntDesign onPress={() => handleDislike(post?._id)} name="heart" size={22} color="red" />
                   ) : (
-                    <AntDesign
-                      onPress={() => handleLike(post?._id)}
-                      name="hearto"
-                      size={22}
-                      color="black"
-                    />
+                    <AntDesign onPress={() => handleLike(post?._id)} name="hearto" size={22} color="black" />
                   )}
                   <TouchableOpacity onPress={() => handleCommentPress(post?._id)} >
                     <MaterialCommunityIcons name="comment-outline" size={22} color="black" />
@@ -161,19 +161,23 @@ const HomeScreen = ({ navigation }) => {
           </View>
           <BottomSheetModal ref={bottomSheetModalRef} index={1} snapPoints={snapPoints} backgroundStyle={{ borderRadius: 30 }} onDismiss={() => setIsOpen(false)} >
           <ScrollView style={{padding: 15}}>
-            <View style={{borderBottomWidth: 0.5, flexDirection: "row", justifyContent: "space-between"}}>
-              <TextInput placeholder="Entry a comment" style={{padding: 10}} />
-              <MaterialCommunityIcons name="send-circle" size={30} color="black" style={{padding: 10}}/>
-            </View>
-            <View style={{marginTop: 15}}>
+              <View style={{ borderBottomWidth: 0.5, flexDirection: "row", justifyContent: "space-between" }}>
+                <TextInput placeholder="Type your comment here" style={{ padding: 10 }} value={content} onChangeText={(text) => setContent(text)} />
+                <MaterialCommunityIcons name="send-circle" size={30} color="black" style={{ padding: 10 }} onPress={() => postReplies(postIdOne)} />
+              </View>
+            <View style={{marginTop: 15, marginBottom: 100}}>
               {replies.length === 0 ? (
                 <Text style={{fontSize: 15, fontWeight: "500"}}>There are no comments. Do the first to comment</Text>
               ) : (
                 replies.map((reply, index) => (
-                  <View key={index}>
-                    <Text>{reply?.user?.username}</Text>
-                    <Text>{reply?.content}</Text>
-                    
+                  <View key={index} style={{flexDirection: "row", gap: 15, marginTop: 15}}>
+                    <View>
+                      <Image style={{ width: 40, height: 40, borderRadius: 20, resizeMode: "contain" }} source={{uri: reply?.user?.profilePicture}} />
+                    </View>
+                    <View>
+                      <Text style={{fontSize: 15, fontWeight: "bold"}}>{reply?.user?.username}</Text>
+                      <Text>{reply?.content}</Text>
+                    </View>
                   </View>
                 ))
               )}
