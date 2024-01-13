@@ -359,13 +359,16 @@ app.post("/post-replies/:postId/:userId", async (req, res) => {
 
 app.get("/get-replies/:postId", async (req, res) => {
   try {
-    const postId = req.params.postId
-    const post = await Post.findById(postId).populate("user", "fullName username profilePicture")
-    const replies = await post.replies
-    console.log("successfully reply: ", replies);
+    const postId = req.params.postId;
+    const post = await Post.findById(postId).populate("user", "fullName username profilePicture");
+    
+    // Kullanıcının yanıtlarını alırken kullanıcı verilerini de getir.
+    const replies = await Post.populate(post.replies, { path: "user", select: "fullName username profilePicture" });
+    
+    console.log("Successfully retrieved replies: ", replies);
     res.json(replies);
   } catch (error) {
     console.log(error);
-    res.status(500).json({message: "an error occurred while repling"})
+    res.status(500).json({ message: "An error occurred while retrieving replies" });
   }
-})
+});

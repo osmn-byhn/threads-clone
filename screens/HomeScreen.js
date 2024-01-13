@@ -171,8 +171,8 @@ const HomeScreen = ({ navigation }) => {
               ) : (
                 replies.map((reply, index) => (
                   <View key={index}>
-                    <Text>{reply.content}</Text>
-                    <Text>{reply.content}</Text>
+                    <Text>{reply?.user?.username}</Text>
+                    <Text>{reply?.content}</Text>
                     
                   </View>
                 ))

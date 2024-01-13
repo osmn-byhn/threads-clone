@@ -129,18 +129,7 @@ const EditProfile = ({ navigation }) => {
           source={{ uri: selectedImage ? selectedImage : user?.profilePicture }}
         />
         <Pressable onPress={pickImage}>
-          <View
-            style={{
-              width: 90,
-              height: 90,
-              borderRadius: 50,
-              backgroundColor: 'gray',
-              opacity: 0.5,
-              marginTop: -90,
-              textAlign: 'center',
-              marginLeft: Dimensions.get('window').width / 2.6,
-            }}
-          >
+          <View style={{ width: 90, height: 90, borderRadius: 50, backgroundColor: 'gray', opacity: 0.5, marginTop: -90, textAlign: 'center', marginLeft: Dimensions.get('window').width / 2.6 }} >
             <FontAwesome name="camera" size={24} color="black" style={{ opacity: 1, flex: 1, justifyContent: 'center', textAlign: 'center', marginTop: 31 }} />
           </View>
         </Pressable>
